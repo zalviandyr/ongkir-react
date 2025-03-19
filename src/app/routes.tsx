@@ -1,3 +1,4 @@
+import { GuestRoute } from "@/pages/auth/guest-route";
 import Login from "@/pages/auth/login";
 import { ProtectedRoute } from "@/pages/auth/protected-route";
 import Register from "@/pages/auth/register";
@@ -14,8 +15,13 @@ const routes: RouteObject[] = [
       },
     ],
   },
-  { element: <Login />, path: "/login" },
-  { element: <Register />, path: "/register" },
+  {
+    element: <GuestRoute />,
+    children: [
+      { element: <Login />, path: "/login" },
+      { element: <Register />, path: "/register" },
+    ],
+  },
 ];
 
 export default routes;

@@ -4,13 +4,20 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/form/text-field";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useRegister } from "@/api/auth";
+import { toast } from "sonner";
 
-const formSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(8).max(10),
-  confirmPassword: z.string().min(8).max(10),
-});
+const formSchema = z
+  .object({
+    username: z.string().min(2).max(50),
+    password: z.string().min(8).max(10),
+    confirmPassword: z.string().min(8).max(10),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type IFormSchema = z.infer<typeof formSchema>;
 
@@ -24,8 +31,22 @@ const Register = () => {
     },
   });
 
+  const navigate = useNavigate();
+  const { mutate } = useRegister();
+
   const onSubmit = (data: IFormSchema) => {
-    console.log("Register Data:", data);
+    mutate(
+      { username: data.username, password: data.password },
+      {
+        onSuccess: () => {
+          toast.success("Success register", {
+            description: "Please login with registered user",
+          });
+
+          navigate("/login", { replace: true });
+        },
+      }
+    );
   };
 
   return (
@@ -36,9 +57,14 @@ const Register = () => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <TextField form={form} name="username" label="Username" />
 
-            <TextField form={form} name="password" label="Password" />
+            <TextField form={form} name="password" label="Password" type="password" />
 
-            <TextField form={form} name="confirmPassword" label="Confirm Password" />
+            <TextField
+              form={form}
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+            />
 
             <Button type="submit" className="w-full">
               Register

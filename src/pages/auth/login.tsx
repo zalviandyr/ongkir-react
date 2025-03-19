@@ -5,7 +5,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/form/text-field";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useLogin } from "@/api/auth";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -23,10 +25,27 @@ export const Login: React.FC = () => {
     },
   });
 
-  function onSubmit(values: IFormSchema) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  const navigate = useNavigate();
+  const { mutate } = useLogin();
+
+  function onSubmit(value: IFormSchema) {
+    mutate(
+      { username: value.username, password: value.password },
+      {
+        onSuccess: () => {
+          toast.success("Welcome", {
+            description: "Calculate your package",
+          });
+
+          navigate("/", { replace: true });
+        },
+        onError: (e) => {
+          toast.error("Failed login", {
+            description: e.message,
+          });
+        },
+      }
+    );
   }
 
   return (
@@ -37,7 +56,7 @@ export const Login: React.FC = () => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <TextField form={form} name="username" label="Username" />
 
-            <TextField form={form} name="password" label="Password" />
+            <TextField form={form} name="password" label="Password" type="password" />
 
             <Button type="submit" className="w-full">
               Login
