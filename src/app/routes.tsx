@@ -1,7 +1,7 @@
-import Login from "@/auth/login";
-import { ProtectedRoute } from "@/auth/protected-route";
-import Register from "@/auth/register";
-import { Home } from "@/home/home";
+import Login from "@/pages/auth/login";
+import { ProtectedRoute } from "@/pages/auth/protected-route";
+import Register from "@/pages/auth/register";
+import { Home } from "@/pages/home/home";
 import { RouteObject } from "react-router";
 
 const routes: RouteObject[] = [
