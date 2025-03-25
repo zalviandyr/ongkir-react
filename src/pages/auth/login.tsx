@@ -28,7 +28,7 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { mutate } = useLogin();
 
-  function onSubmit(value: IFormSchema) {
+  const onSubmit = (value: IFormSchema) => {
     mutate(
       { username: value.username, password: value.password },
       {
@@ -46,7 +46,7 @@ export const Login: React.FC = () => {
         },
       }
     );
-  }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
