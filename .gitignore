@@ -12,7 +12,6 @@ dist-ssr
 *.local
 
 # Build
-static
 ongkir-go
 
 # Editor directories and files

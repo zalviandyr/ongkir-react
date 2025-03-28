@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func StaticMiddleware(staticDir embed.FS) gin.HandlerFunc {
+func NewStaticMiddleware(webDir embed.FS, nameDir string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		staticFiles, _ := fs.Sub(staticDir, "static")
+		staticFiles, _ := fs.Sub(webDir, nameDir)
 		fileserver := http.FileServer(http.FS(staticFiles))
 		path := ctx.Request.URL.Path
 

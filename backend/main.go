@@ -1,26 +1,18 @@
 package main
 
 import (
-	"embed"
-	"net/http"
-	"ongkir-go/app/middleware"
-
-	"github.com/gin-gonic/gin"
+	"context"
+	"ongkir-go/bootstrap"
+	"ongkir-go/router"
 )
 
-//go:embed static/*
-var staticDir embed.FS
-
 func main() {
-	app := gin.Default()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	app.Use(middleware.StaticMiddleware(staticDir))
+	init := bootstrap.Initialized(ctx)
+	app := router.NewRoute(init)
 
-	app.GET("/api/ping", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
-	app.Run("0.0.0.0:8000")
+	// run on port 8000
+	app.Run(":8000")
 }
