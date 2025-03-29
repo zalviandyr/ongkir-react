@@ -8,33 +8,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewErrorMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// handle request
-		c.Next()
-
-		// get last error
-		err := c.Errors.Last()
-		if err == nil {
-			return
-		}
-
-		if error, ok := err.Err.(*data.InternalServerError); ok {
+func NewErrorMiddleware() gin.RecoveryFunc {
+	return func(c *gin.Context, err any) {
+		if error, ok := err.(*data.InternalServerError); ok {
 			c.JSON(pkg.NewResponse(http.StatusInternalServerError, error.Message).Build())
 			return
 		}
 
-		if error, ok := err.Err.(*data.UnprocessableEntityError); ok {
+		if error, ok := err.(*data.UnprocessableEntityError); ok {
 			c.JSON(pkg.NewResponse(http.StatusUnprocessableEntity, error.Message).Body(error.Field).Build())
 			return
 		}
 
-		if error, ok := err.Err.(*data.BadRequestError); ok {
+		if error, ok := err.(*data.BadRequestError); ok {
 			c.JSON(pkg.NewResponse(http.StatusBadRequest, error.Message).Build())
 			return
 		}
 
-		if error, ok := err.Err.(*data.NotFoundError); ok {
+		if error, ok := err.(*data.NotFoundError); ok {
 			c.JSON(pkg.NewResponse(http.StatusNotFound, error.Message).Build())
 			return
 		}

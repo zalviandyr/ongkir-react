@@ -22,13 +22,11 @@ func NewAuthController(service *service.AuthService) *AuthController {
 func (con *AuthController) Register(c *gin.Context) {
 	user := new(entities.UserDto)
 	if err := pkg.ExtractValidateData(c, user); err != nil {
-		c.Error(err)
-		return
+		panic(err)
 	}
 
 	if err := con.Service.Register(user); err != nil {
-		c.Error(err)
-		return
+		panic(err)
 	}
 
 	response := pkg.NewResponse(http.StatusCreated, "success register").Body(user)
@@ -39,14 +37,11 @@ func (con *AuthController) Register(c *gin.Context) {
 func (con *AuthController) Login(c *gin.Context) {
 	user := new(entities.UserDto)
 	if err := pkg.ExtractValidateData(c, user); err != nil {
-		c.Error(err)
-		return
+		panic(err)
 	}
 
 	if err := con.Service.Login(user); err != nil {
 		panic(err)
-		// c.Error(err)
-		// return
 	}
 
 	response := pkg.NewResponse(http.StatusOK, "success login")

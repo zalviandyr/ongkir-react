@@ -12,11 +12,11 @@ import (
 type Route struct{}
 
 func NewRoute(initialization *bootstrap.Initialization) *gin.Engine {
-	app := gin.Default(func(e *gin.Engine) {
-		e.Use(middleware.NewStaticMiddleware(asset.WebDir, "web"))
-	})
+	app := gin.Default()
+	app.Use(middleware.NewStaticMiddleware(asset.WebDir, "web"))
 
-	api := app.Group("/api", middleware.NewErrorMiddleware())
+	api := app.Group("/api")
+	api.Use(gin.CustomRecovery(middleware.NewErrorMiddleware()))
 
 	api.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
