@@ -1,9 +1,12 @@
+import { useLogout } from "@/api/auth";
 import { SelectField } from "@/components/form/select-field";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -22,10 +25,24 @@ export const Home: React.FC = () => {
     },
   });
 
+  const navigate = useNavigate();
+  const { mutate } = useLogout();
   // const { data } = useGetProvince();
 
   const onSubmit = (data: IFormSchema) => {
     console.log(data);
+  };
+
+  const logoutAction = () => {
+    mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Bye bye", {
+          description: "Please comeback",
+        });
+
+        navigate("/login", { replace: true });
+      },
+    });
   };
 
   return (
@@ -43,6 +60,15 @@ export const Home: React.FC = () => {
             </Button>
           </form>
         </Form>
+
+        <Button
+          type="button"
+          variant="ghost"
+          className="mt-10 w-full text-red-500"
+          onClick={logoutAction}
+        >
+          Logout
+        </Button>
       </div>
 
       <div className="w-96 bg-white shadow-lg rounded-lg p-6"></div>

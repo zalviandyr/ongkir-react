@@ -1,4 +1,6 @@
+import { capitalize } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 
 export type IUserData = {
   username: string;
@@ -8,32 +10,42 @@ export type IUserData = {
 export const useRegister = () =>
   useMutation({
     mutationFn: async (data: IUserData) => {
-      let saved = fetchAllData();
-      const user = getData(data);
+      try {
+        await axios.post("/api/register", data);
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          const message = e.response?.data?.message ?? "Server error";
 
-      // avoid duplicate username
-      if (user) {
-        saved = saved.filter((e) => e.username !== user.username);
+          throw Error(capitalize(message));
+        }
       }
-
-      saved.push(data);
-
-      localStorage.setItem("user-data", JSON.stringify(saved));
     },
   });
 
 export const useLogin = () =>
   useMutation({
-    mutationFn: async (data: IUserData): Promise<IUserData> => {
-      const user = getData(data);
+    mutationFn: async (data: IUserData): Promise<IUserData | undefined> => {
+      try {
+        const response = await axios.post("/api/login", data);
+        const result = response.data as IUserData;
 
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(result));
 
-        return user as IUserData;
+        return result;
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          const message = e.response?.data?.message ?? "Server error";
+
+          throw Error(capitalize(message));
+        }
       }
+    },
+  });
 
-      throw Error("Invalid username or password");
+export const useLogout = () =>
+  useMutation({
+    mutationFn: async () => {
+      localStorage.clear();
     },
   });
 
@@ -46,23 +58,3 @@ export const useIsAuthenticated = () =>
       return user ? true : false;
     },
   });
-
-const fetchAllData = (): IUserData[] => {
-  const data = localStorage.getItem("user-data");
-  if (data && data.length > 0) {
-    return JSON.parse(data) as IUserData[];
-  }
-
-  return [];
-};
-
-const getData = (data: IUserData): IUserData | null => {
-  const saved = fetchAllData();
-  const exist = saved.find((e) => e.username === data.username && e.password === data.password);
-
-  if (exist) {
-    return exist as IUserData;
-  }
-
-  return null;
-};

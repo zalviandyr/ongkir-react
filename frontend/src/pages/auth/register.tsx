@@ -45,6 +45,11 @@ const Register = () => {
 
           navigate("/login", { replace: true });
         },
+        onError: (e) => {
+          toast.success("Failed register", {
+            description: e.message,
+          });
+        },
       }
     );
   };
