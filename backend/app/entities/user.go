@@ -10,6 +10,6 @@ func (*UserDao) Name() string {
 }
 
 type UserDto struct {
-	Username string `binding:"required" json:"name"`
+	Username string `binding:"required" json:"username"`
 	Password string `binding:"required,min=4" json:"password"`
 }

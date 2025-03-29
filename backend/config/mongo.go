@@ -50,3 +50,15 @@ func (m *Mongo) Create(collection entities.Collection) error {
 
 	return nil
 }
+
+func (m *Mongo) Find(collection entities.Collection, result any) error {
+	bsonData, err := bson.Marshal(collection)
+	if err != nil {
+		return err
+	}
+
+	return m.database.
+		Collection(collection.Name()).
+		FindOne(m.ctx, bsonData).
+		Decode(result)
+}

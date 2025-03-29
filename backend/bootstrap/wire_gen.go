@@ -10,6 +10,7 @@ import (
 	"context"
 	"github.com/google/wire"
 	"ongkir-go/app/controller"
+	"ongkir-go/app/repository"
 	"ongkir-go/app/service"
 	"ongkir-go/config"
 )
@@ -19,7 +20,8 @@ import (
 func Initialized(ctx context.Context) *Initialization {
 	environment := config.NewEnvironment()
 	mongo := config.NewMongo(environment, ctx)
-	authService := service.NewAuthService(mongo)
+	authRepository := repository.NewAuthRepository(mongo)
+	authService := service.NewAuthService(authRepository)
 	authController := controller.NewAuthController(authService)
 	initialization := NewInitialization(authController)
 	return initialization
@@ -27,4 +29,4 @@ func Initialized(ctx context.Context) *Initialization {
 
 // injector.go:
 
-var authSet = wire.NewSet(controller.NewAuthController, service.NewAuthService)
+var authSet = wire.NewSet(controller.NewAuthController, service.NewAuthService, repository.NewAuthRepository)

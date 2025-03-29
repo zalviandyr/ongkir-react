@@ -28,6 +28,7 @@ func NewRoute(initialization *bootstrap.Initialization) *gin.Engine {
 	auth := initialization.AuthController
 	{
 		api.POST("/register", auth.Register)
+		api.POST("/login", auth.Login)
 	}
 
 	return app

@@ -26,12 +26,29 @@ func (con *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	err := con.Service.Register(user)
-	if err != nil {
+	if err := con.Service.Register(user); err != nil {
 		c.Error(err)
+		return
 	}
 
-	response := pkg.NewResponse(http.StatusCreated, "register success").Body(user)
+	response := pkg.NewResponse(http.StatusCreated, "success register").Body(user)
 	c.JSON(response.Build())
 
+}
+
+func (con *AuthController) Login(c *gin.Context) {
+	user := new(entities.UserDto)
+	if err := pkg.ExtractValidateData(c, user); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := con.Service.Login(user); err != nil {
+		panic(err)
+		// c.Error(err)
+		// return
+	}
+
+	response := pkg.NewResponse(http.StatusOK, "success login")
+	c.JSON(response.Build())
 }

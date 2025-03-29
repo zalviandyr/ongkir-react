@@ -2,16 +2,18 @@ package service
 
 import (
 	"ongkir-go/app/entities"
-	"ongkir-go/config"
+	"ongkir-go/app/repository"
 )
 
 type AuthService struct {
-	mongo *config.Mongo
+	Repository *repository.AuthRepository
 }
 
-func NewAuthService(mongo *config.Mongo) *AuthService {
+func NewAuthService(
+	repository *repository.AuthRepository,
+) *AuthService {
 	return &AuthService{
-		mongo: mongo,
+		Repository: repository,
 	}
 }
 
@@ -21,5 +23,18 @@ func (s *AuthService) Register(user *entities.UserDto) error {
 		Password: user.Password,
 	}
 
-	return s.mongo.Create(dao)
+	return s.Repository.Register(dao)
+}
+
+func (s *AuthService) Login(user *entities.UserDto) error {
+	dao := &entities.UserDao{
+		Username: user.Username,
+		Password: user.Password,
+	}
+
+	if _, err := s.Repository.Login(dao); err != nil {
+		return err
+	}
+
+	return nil
 }

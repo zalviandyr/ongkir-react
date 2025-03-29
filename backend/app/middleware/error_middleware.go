@@ -15,6 +15,9 @@ func NewErrorMiddleware() gin.HandlerFunc {
 
 		// get last error
 		err := c.Errors.Last()
+		if err == nil {
+			return
+		}
 
 		if error, ok := err.Err.(*data.InternalServerError); ok {
 			c.JSON(pkg.NewResponse(http.StatusInternalServerError, error.Message).Build())
