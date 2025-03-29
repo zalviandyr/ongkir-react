@@ -22,7 +22,14 @@ func NewAuthRepository(
 }
 
 func (r *AuthRepository) Register(user *entities.UserDao) error {
-	return r.Mongo.Create(user)
+	result, _ := r.Login(user)
+	if result == nil {
+		return r.Mongo.Create(user)
+	}
+
+	return &data.BadRequestError{
+		Message: "username has been created",
+	}
 }
 
 func (r *AuthRepository) Login(user *entities.UserDao) (*entities.UserDao, error) {
